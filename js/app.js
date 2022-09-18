@@ -23,6 +23,8 @@ function readtask() {
     let itemId = Date.now();
     // add to list
     addItem(newItem, itemPriority, itemDate, itemId);
+  }  else{
+    alert("Please select priority");
   }
 }
 
