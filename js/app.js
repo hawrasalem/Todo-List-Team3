@@ -23,6 +23,8 @@ function readtask() {
     let itemId = Date.now();
     // add to list
     addItem(newItem, itemPriority, itemDate, itemId);
+  }  else{
+    alert("Please select priority");
   }
 }
 
@@ -52,6 +54,8 @@ function addRow(itemId, newItem, itemPriority, itemDate) {
   var cell = row.insertCell();
   var checkbox = document.createElement("INPUT");
   checkbox.setAttribute("type", "checkbox");
+  checkbox.setAttribute("id", "check"+itemId);
+  checkbox.setAttribute("onclick", "StrikeOut("+itemId+")");
   cell.appendChild(checkbox);
 
   // add new cell (title)
@@ -163,7 +167,16 @@ function editItem(itemId) {
 //
 //   }
 // }
+function StrikeOut(ItemId){
+  var textTask=document.getElementById(ItemId);
+  var checkBox=document.getElementById("check"+ItemId);
 
+  if(checkBox.checked==true){
+    textTask.style.textDecoration = 'line-through';
+  }else{
+    textTask.style.textDecoration = 'none';
+  }
+}
 
 $('.dropdown-item').on('click', function () {
   var btnObj = $(this).parent().siblings('button');
