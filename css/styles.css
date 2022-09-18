@@ -53,3 +53,8 @@ td{
   padding: 0;
   margin: 0;
 }
+.taskTitle{
+  background: transparent;
+  border: none;
+  color: white;
+}
