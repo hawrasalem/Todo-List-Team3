@@ -4,7 +4,7 @@ let tasks = [];
 if (localStorage.getItem("tasks")) {
   tasks = JSON.parse(localStorage.getItem("tasks"));
   tasks.forEach(task => {
-    addRow(task.id, task.title, task.priority, task.date);
+    addRow(task.done,task.id, task.title, task.priority, task.date);
 
   });
 }
@@ -17,14 +17,18 @@ function updateLocalStorage(arr) {
 // read item from user then add item to list
 function readtask() {
   let newItem = document.getElementById('newlistitem').value;
-  if (newItem != "" && $(".dropdown-toggle").val() != "") {
+  if (newItem != "") {
+    if( $(".dropdown-toggle").val() != ""){
     let itemPriority = $(".dropdown-toggle").text();
     let itemDate = (new Date()).toString().split(' ').splice(1, 3).join(' ');
     let itemId = Date.now();
     // add to list
     addItem(newItem, itemPriority, itemDate, itemId);
+    }else{
+      alert("Please select priority");
+    }
   }  else{
-    alert("Please select priority");
+    alert("Please enter task");
   }
 }
 
@@ -41,11 +45,11 @@ function addItem(task, priority, date, id) {
   // add item to local storage
   updateLocalStorage(tasks);
   // add to page
-  addRow(id, task, priority, date);
+  addRow(item.done,id, task, priority, date);
 }
 
 
-function addRow(itemId, newItem, itemPriority, itemDate) {
+function addRow(status,itemId, newItem, itemPriority, itemDate) {
   // view item
   var table = document.getElementById("listforitems");
   // add new row
@@ -53,6 +57,7 @@ function addRow(itemId, newItem, itemPriority, itemDate) {
   // add new cell (checkbox)
   var cell = row.insertCell();
   var checkbox = document.createElement("INPUT");
+  checkbox.classList.add('form-check-input','c9','text-justify');
   checkbox.setAttribute("type", "checkbox");
   checkbox.setAttribute("id", "check"+itemId);
   checkbox.setAttribute("onclick", "StrikeOut("+itemId+")");
@@ -68,6 +73,15 @@ function addRow(itemId, newItem, itemPriority, itemDate) {
   title.setAttribute("type", "text");
   title.setAttribute("value", newItem);
   // cell.innerHTML = newItem;
+  if(status){
+    checkbox.setAttribute("checked", "checked");
+    title.style.textDecoration = 'line-through';
+    title.style.color = "lightgray";
+  }else{
+    checkbox.removeAttribute("checked");
+    title.style.textDecoration = 'none';
+    title.style.color = "white";
+  }
   cell.appendChild(title);
 
 
@@ -99,7 +113,7 @@ function addRow(itemId, newItem, itemPriority, itemDate) {
   action.setAttribute('id', 'edit' + itemId);
   cell.appendChild(action);
   action = document.createElement("i");
-  action.className = "icon fas fa-trash-alt fa-lg text-warning";
+  action.className = "icon fas fa-trash-alt fa-lg";
   action.setAttribute('onclick', 'removeItem(' + itemId + ')');
   action.setAttribute('id', 'remove' + itemId);
   cell.appendChild(action);
@@ -144,38 +158,56 @@ function editItem(itemId) {
   });
   $("#edit"+itemId).toggleClass('icon fa-sharp fa-solid fa-pencil');
 
-  $('.fa-square-check').on('click',function(){
+  $('.fa-check').on('click',function(){
     let editedTask = document.getElementById(itemId).value;
     tasks.forEach((element, index) => {
       if(element.id === itemId) {
         tasks[index].title = editedTask;
+        if(editedTask==""){
+          removeItem(itemId);       
+        }
       }
   });
   updateLocalStorage(tasks);
     $("#"+itemId).attr('disabled', 'disabled');
   });
   
-  $("#edit"+itemId).toggleClass('icon fa-solid fa-square-check');
-
-
+  $("#edit"+itemId).toggleClass('icon fa-solid fa-check');
 }
 
-// function editItem(item){
-//   let row = item.parent().parent();
-//   let editedItem = tasks.find(task=> task.id === row.attr('id'));
-//   if(editedItem){
-//
-//   }
-// }
+// $(document).ready(function() {
+//   $(".taskTitle").keyup(function(event) {
+//       if (event.which === 13) {
+//         console.log($(this).attr('id'));
+//           editItem($(this).attr('id'));
+//       }
+//   });
+
+// });
+
+// strike through when checked
+
 function StrikeOut(ItemId){
   var textTask=document.getElementById(ItemId);
   var checkBox=document.getElementById("check"+ItemId);
-
+  let status ="";
   if(checkBox.checked==true){
     textTask.style.textDecoration = 'line-through';
+    textTask.style.color = "lightgray";
+    status=true;
   }else{
     textTask.style.textDecoration = 'none';
+    textTask.style.color = "white";
+    status=false;
   }
+  tasks.forEach((element, index) => {
+    if(element.id === ItemId) {
+      tasks[index].done = status;
+    }
+
+});
+
+  updateLocalStorage(tasks);
 }
 
 $('.dropdown-item').on('click', function () {
